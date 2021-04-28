@@ -294,10 +294,10 @@ pub enum SLMPClearMode {
     AllClear = 0x02,
 }
 
+use std::error::Error;
 use std::io;
 use std::net::{SocketAddr, TcpStream, UdpSocket};
 use std::time::Duration;
-use std::error::Error;
 
 /// TCPとUDPの差異を吸収
 pub enum TCPorUDP {
@@ -342,15 +342,15 @@ impl TCPorUDP {
     ///
     /// * `timeout` - ミリ秒単位での指定
     ///
-    pub fn set_timeout(&mut self, timeout: u64){
+    pub fn set_timeout(&mut self, timeout: u64) {
         use TCPorUDP::*;
-        let result =match self{
+        let result = match self {
             TCP(stream) => stream.set_read_timeout(Some(Duration::from_millis(timeout))),
-            UDP(socket,_)=> socket.set_read_timeout(Some(Duration::from_millis(timeout)))
+            UDP(socket, _) => socket.set_read_timeout(Some(Duration::from_millis(timeout))),
         };
         match result {
-            Ok(_)=> (),
-            Err(e) => eprintln!("{}", e)
+            Ok(_) => (),
+            Err(e) => eprintln!("{}", e),
         }
     }
 }

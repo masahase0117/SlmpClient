@@ -142,7 +142,7 @@ impl SLMPConnectionInfo {
         }
         self.seq_no
     }
-    fn set_timeout(&mut self, timeout: u64){
+    fn set_timeout(&mut self, timeout: u64) {
         self.socket.as_mut().unwrap().set_timeout(timeout);
     }
     /// SLMPの応答を受信
