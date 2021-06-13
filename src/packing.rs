@@ -249,7 +249,12 @@ mod tests {
 ///
 /// # 例
 ///
-/// [true, true, false, true, false, false] -> [0x11u8, 0x01u8, 0x00u8]
+/// ```
+/// use libslmp4rust::*;
+/// let bit_data = [true, true, false, true, false, false];
+/// let packed_data = pack_bits_by_bit(&bit_data);
+/// assert_eq!(packed_data, vec![0x11u8, 0x01u8, 0x00u8]);
+/// ```
 pub fn pack_bits_by_bit(data: &[bool]) -> Vec<u8> {
     let mut buf = Vec::new();
     for (i, d) in data.iter().enumerate() {
@@ -283,7 +288,12 @@ pub fn pack_bits_by_bit(data: &[bool]) -> Vec<u8> {
 ///
 /// # 例
 ///
-/// [true, true, false, true, false, false] -> [0b00001011u8,]
+/// ```
+/// use libslmp4rust::*;
+/// let bit_data = [true, true, false, true, false, false];
+/// let packed_data = pack_bits_by_word(&bit_data);
+/// assert_eq!(packed_data, vec![0b00001011u8,]);
+/// ```
 pub fn pack_bits_by_word(data: &[bool]) -> Vec<u8> {
     let mut buf = Vec::new();
     for (i, d) in data.iter().enumerate() {
@@ -311,7 +321,12 @@ pub fn pack_bits_by_word(data: &[bool]) -> Vec<u8> {
 ///
 /// # 例
 ///
-/// [0x1995u16, 0x1202u16, 0x1130u16] -> [0x95, 0x19, 0x02, 0x12, 0x30, 0x11]
+/// ```
+/// use libslmp4rust::*;
+/// let raw_data = [0x1995u16, 0x1202u16, 0x1130u16];
+/// let packed_data = pack_words_by_word(&raw_data);
+/// assert_eq!(packed_data, vec![0x95, 0x19, 0x02, 0x12, 0x30, 0x11]);
+/// ```
 pub fn pack_words_by_word(data: &[u16]) -> Vec<u8> {
     let mut buf = Vec::new();
     for d in data.iter() {
@@ -333,8 +348,13 @@ pub fn pack_words_by_word(data: &[u16]) -> Vec<u8> {
 ///
 /// # 例
 ///
-/// [0x00, 0x01, 0x00, 0x11] -> [false, false, false, true, false, false, true, true]
-pub fn unpack_bits_by_bit(data: &[u8]) -> Vec<bool> {
+/// ```
+/// use libslmp4rust::*;
+/// let raw_data = [0x00, 0x01, 0x00, 0x11];
+/// let unpacked = unpack_bits_by_bit(&raw_data).unwrap();
+/// assert_eq!(unpacked, vec![false, false, false, true, false, false, true, true]);
+/// ```
+pub fn unpack_bits_by_bit(data: &[u8]) -> Result<Vec<bool>, &'static str> {
     let mut buf = Vec::new();
     for d in data.iter() {
         match d {
@@ -372,8 +392,15 @@ pub fn unpack_bits_by_bit(data: &[u8]) -> Vec<bool> {
 ///
 /// # 例
 ///
-/// [0x34, 0x12] -> [false, false, true, false, true, true, false, false, false, true, false, false, true, false, false, false]
-fn unpack_bits_by_word(data: &[u8]) -> Vec<bool> {
+/// ```
+/// use libslmp4rust::*;
+/// let raw_data = [0x34, 0x12];
+/// let unpacked = unpack_bits_by_word(&raw_data);
+/// assert_eq!(unpacked,
+///    vec![false, false, true, false, true, true, false, false,
+///         false, true, false, false, true, false, false, false]);
+/// ```
+pub fn unpack_bits_by_word(data: &[u8]) -> Vec<bool> {
     let mut buf = Vec::new();
     for d in data.iter() {
         for i in 0..8 {
@@ -400,7 +427,12 @@ fn unpack_bits_by_word(data: &[u8]) -> Vec<bool> {
 ///
 /// # 例
 ///
-/// [0x34, 0x12, 0x02, 0x00, 0xef, 0x1d] -> [0x1234, 0x0002, 0x1def]
+/// ```
+/// use libslmp4rust::*;
+/// let raw_data = [0x34, 0x12, 0x02, 0x00, 0xef, 0x1d];
+/// let unpacked = unpack_words_by_word(&raw_data);
+/// assert_eq!(unpacked, vec![0x1234, 0x0002, 0x1def])
+/// ```
 pub fn unpack_words_by_word(data: &[u8]) -> Vec<u16> {
     let mut buf = Vec::new();
     for (i, d) in data.iter().enumerate() {
@@ -426,7 +458,12 @@ pub fn unpack_words_by_word(data: &[u8]) -> Vec<u16> {
 ///
 /// # 例
 ///
-/// [0x4e, 0x4f, 0x54, 0x4c, 0xaf, 0xb9, 0xde, 0xc3] -> [0x4c544f4e, 0xc3deb9af]
+/// ```
+/// use libslmp4rust::*;
+/// let raw_data = [0x4e, 0x4f, 0x54, 0x4c, 0xaf, 0xb9, 0xde, 0xc3];
+/// let unpacked = unpack_dwords_by_dword(&raw_data);
+/// assert_eq!(unpacked, vec![0x4c544f4e, 0xc3deb9af]);
+/// ```
 pub fn unpack_dwords_by_dword(data: &[u8]) -> Vec<u32> {
     let mut buf = Vec::new();
     for (i, d) in data.iter().enumerate() {
@@ -464,7 +501,12 @@ pub fn unpack_dwords_by_dword(data: &[u8]) -> Vec<u32> {
 ///
 /// # 例
 ///
-/// 0x49 -> [true, false, false, true, false, false, true, false]
+/// ```
+/// use libslmp4rust::*;
+/// let raw_data: u8 = 0x49;
+/// let unpacked = unpack_bits_in_byte(raw_data);
+/// assert_eq!(unpacked, vec![true, false, false, true, false, false, true, false]);
+/// ```
 fn unpack_bits_in_byte(data: u8) -> [bool; 8] {
     let mut buf = [false; 8];
     for i in 0..8 {
@@ -488,7 +530,13 @@ fn unpack_bits_in_byte(data: u8) -> [bool; 8] {
 ///
 /// # 例
 ///
-/// 0x2030 -> [false, false, false, false, true, true, false, false, false, false, false, false, false, true, false, false]
+/// ```
+/// use libslmp4rust::*;
+/// let raw_data: u16 = 0x2030;
+/// let unpacked = unpack_bits_in_word(raw_data);
+/// assert_eq!(unpacked, vec![false, false, false, false, true, true, false, false,
+///                           false, false, false, false, false, true, false, false]);
+/// ```
 fn unpack_bits_in_word(data: u16) -> [bool; 16] {
     let mut buf = [false; 16];
     let lows = unpack_bits_in_byte(data as u8);
@@ -514,11 +562,16 @@ fn unpack_bits_in_word(data: u16) -> [bool; 16] {
 ///
 /// # 例
 ///
-/// 0xc3deb9af ->
-/// [true, true, true, true, false, true, false, true,
+/// ```
+/// use libslmp4rust::*;
+/// let raw_data: u32 = 0xc3deb9af;
+/// let packed = unpack_bits_in_dword(raw_data);
+/// assert_eq!(packed, vec![
+/// true, true, true, true, false, true, false, true,
 /// true, false, false, true, true, true, false, true,
 /// false, true, true, true, true, false, true, true,
-/// true, true, false, false, false, false, true, true]
+/// true, true, false, false, false, false, true, true]);
+/// ```
 fn unpack_bits_in_dword(data: u32) -> [bool; 32] {
     let mut buf = [false; 32];
     let d1 = unpack_bits_in_byte((data >> 24) as u8);
@@ -541,9 +594,12 @@ fn unpack_bits_in_dword(data: u32) -> [bool; 32] {
     buf
 }
 
+/// SLMPにおけるデバイス
 #[derive(Copy, Clone, Debug, Hash)]
 pub struct SLMPDevice {
+    /// デバイス種別
     pub d_code: SLMPDeviceCode,
+    /// アドレス
     pub addr: u32,
 }
 impl SLMPDevice {
@@ -576,9 +632,12 @@ impl PartialEq for SLMPDevice {
     }
 }
 
+/// SLMPにおけるデバイスの値
 #[derive(Copy, Clone, Debug, Hash)]
 pub struct SLMPDeviceData<T: PartialEq + Copy + Clone> {
+    /// 対象デバイス
     pub dev: SLMPDevice,
+    /// デバイスの持っている値
     pub value: T,
 }
 impl<T: PartialEq + Copy> PartialEq for SLMPDeviceData<T> {
@@ -707,6 +766,11 @@ fn unpack_dword2bit(src: &SLMPDeviceData<u32>) -> [SLMPDeviceData<bool>; 32] {
     ret
 }
 
+/// 一連のビットデバイスデータをワードデバイスデータとする
+/// # 引数
+/// * `src` - 16個の連続したビットデバイスデータ
+/// # 返値
+/// 単一のワードデバイスデータ
 pub fn pack_bit2word(src: &[SLMPDeviceData<bool>; 16]) -> SLMPDeviceData<u16> {
     let mut ret = SLMPDeviceData::<u16> {
         dev: SLMPDevice {
@@ -727,6 +791,11 @@ pub fn pack_bit2word(src: &[SLMPDeviceData<bool>; 16]) -> SLMPDeviceData<u16> {
     ret
 }
 
+/// 一連のビットデバイスデータをダブルワードデバイスデータとする
+/// # 引数
+/// * `src` - 32個の連続したビットデバイスデータ
+/// # 返値
+/// 単一のダブルワードデバイスデータ
 pub fn pack_bit2dword(src: &[SLMPDeviceData<bool>; 32]) -> SLMPDeviceData<u32> {
     let mut ret = SLMPDeviceData::<u32> {
         dev: SLMPDevice {
@@ -769,6 +838,7 @@ fn unpack_dword2word(src: &SLMPDeviceData<u32>) -> [SLMPDeviceData<u16>; 2] {
     ret
 }
 /// デバイスブロック
+///
 /// 先頭デバイスと点数で表される
 ///
 /// ここで点数はビットデバイスであろうとワード単位となる
@@ -847,6 +917,7 @@ impl PartialOrd for SLMPDeviceBlock {
     }
 }
 
+/// データを含んだデバイスブロック
 #[derive(Clone, Debug, Hash)]
 pub struct SLMPDeviceBlockData<T: PartialEq + Copy + Clone> {
     pub device_block: SLMPDeviceBlock,

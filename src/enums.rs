@@ -287,10 +287,14 @@ impl PartialEq for SLMPEndCode {
     }
 }
 
+/// クリアモード
 #[derive(Copy, Clone, Debug, Hash)]
 pub enum SLMPClearMode {
+    /// デバイスをクリアしない
     Not = 0x00,
+    /// ラッチ範囲外のデバイスをクリアする
     Clear = 0x01,
+    /// ラッチ範囲も含むすべてのデバイスをクリアする
     AllClear = 0x02,
 }
 

@@ -1,6 +1,10 @@
+/// MTタイプの通信文でのヘッダ
 pub struct SlmpMTHeader {
+    /// フレームタイプ
     pub f_type: u16,
+    /// シリアル番号
     pub serial_no: u16,
+    /// 予約
     pub reserved2: u16,
 }
 impl SlmpMTHeader {
@@ -15,12 +19,19 @@ impl SlmpMTHeader {
         }
     }
 }
+/// 応答におけるサブヘッダ
 pub struct SlmpSubHeaderRes {
+    /// ネットワーク番号
     pub net_no: u8,
+    /// 局番
     pub node_no: u8,
+    /// IOユニット番号
     pub dst_proc_no: u16,
+    /// 予約もしくはマルチドロップ番号
     pub reserved1: u8,
+    /// データ長
     pub dl: u16,
+    /// 終了コード
     pub end_code: u16,
 }
 impl SlmpSubHeaderRes {
@@ -41,12 +52,19 @@ impl SlmpSubHeaderRes {
         }
     }
 }
+/// 要求におけるサブヘッダ
 pub struct SlmpSubHeaderReq {
+    /// ネットワーク番号
     pub net_no: u8,
+    /// 局番
     pub node_no: u8,
+    /// IOユニット番号
     pub dst_proc_no: u16,
+    /// 予約もしくはマルチドロップ番号
     pub reserved1: u8,
+    /// データ長
     pub dl: u16,
+    /// 最大待機時間(250msec単位)
     pub timer: u16,
 }
 impl SlmpSubHeaderReq {
@@ -81,12 +99,19 @@ impl SlmpSubHeaderReq {
         buf
     }
 }
+/// オンデマンド通信におけるサブヘッダ
 pub struct SlmpSubHeaderOd {
+    /// ネットワーク番号
     pub net_no: u8,
+    /// 局番
     pub node_no: u8,
+    /// IOユニット番号
     pub dst_proc_no: u16,
+    /// 予約もしくはマルチドロップ番号
     pub reserved1: u8,
+    /// データ長
     pub dl: u16,
+    /// 予約
     pub reserved3: u16,
 }
 impl SlmpSubHeaderOd {

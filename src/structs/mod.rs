@@ -4,12 +4,19 @@ use super::enums::SLMPCommand;
 use super::enums::SLMPEndCode;
 use headers::*;
 
+/// エラー情報
 pub struct ErrInfo {
+    /// ネットワーク番号
     pub net_no: u8,
+    /// 局番
     pub node_no: u8,
+    /// IOユニット番号
     pub dst_proc_no: u16,
+    /// 予約もしくはマルチドロップ番号
     pub reserved1: u8,
+    /// 要求時のコマンド
     pub command: u16,
+    /// 要求時のサブコマンド
     pub sub_command: u16,
 }
 impl ErrInfo {
@@ -45,6 +52,7 @@ pub struct SLMPConnectionInfo {
     dst_proc: u16,
     /// マルチドロップ番号
     m_drop: u8,
+    /// シリアル番号
     seq_no: u16,
     /// 通信ソケット
     socket: Option<TCPorUDP>,
@@ -134,6 +142,9 @@ impl SLMPConnectionInfo {
     fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
         self.socket.as_mut().unwrap().read(buf)
     }
+    /// 新しい要求用のシリアル番号を取得する
+    /// # 返値
+    /// シリアル番号
     fn get_new_serial(&mut self) -> u16 {
         self.seq_no += 0x10;
         if self.seq_no > 0xff00 {

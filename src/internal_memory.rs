@@ -5,6 +5,15 @@ use crate::packing::{
 };
 use crate::SLMPConnectionInfo;
 
+/// 単一の連続したデバイスの読み取り要求送信(16bitアドレス版)
+/// # 引数
+/// * `connection_info` - SLMP接続情報
+/// * `timeout` - SLMPコマンドのタイムアウト
+/// * `target` - 読み取り対象デバイス
+/// * `count` - デバイス個数
+/// * `is_bit` - ビットデバイスとして取り扱う?
+/// # 返値
+/// 発行したコマンドのシリアル
 pub fn send_read_cmd_16(
     connection_info: &mut SLMPConnectionInfo,
     timeout: u16,
@@ -37,6 +46,15 @@ pub fn send_read_cmd_16(
     connection_info.send_cmd(timeout, SLMPCommand::DeviceRead, s_cmd, &buf)
 }
 
+/// 単一の連続したデバイスの読み取り要求送信(32bitアドレス版)
+/// # 引数
+/// * `connection_info` - SLMP接続情報
+/// * `timeout` - SLMPコマンドのタイムアウト
+/// * `target` - 読み取り対象デバイス
+/// * `count` - デバイス個数
+/// * `is_bit` - ビットデバイスとして取り扱う?
+/// # 返値
+/// 発行したコマンドのシリアル
 pub fn send_read_cmd_32(
     connection_info: &mut SLMPConnectionInfo,
     timeout: u16,
@@ -69,6 +87,13 @@ pub fn send_read_cmd_32(
     connection_info.send_cmd(timeout, SLMPCommand::DeviceRead, s_cmd, &buf)
 }
 
+/// 単一の連続したビットデバイス読み取り要求に対する応答の処理
+/// # 引数
+/// * `buf` - 応答内容の入ったバッファ
+/// * `target` - 要求時に指定したデバイス
+/// # 返値
+/// 読み取りに成功した場合、読み取ったデバイスのリスト。
+/// 失敗した場合、エラー内容を含んだ文字列。
 pub fn decode_read_bit_response(
     buf: &[u8],
     target: SLMPDevice,
@@ -89,6 +114,13 @@ pub fn decode_read_bit_response(
     Ok(ret)
 }
 
+/// 単一の連続したワードデバイス読み取り要求に対する応答の処理
+/// # 引数
+/// * `buf` - 応答内容の入ったバッファ
+/// * `target` - 要求時に指定したデバイス
+/// # 返値
+/// 読み取りに成功した場合、読み取ったデバイスのリスト。
+/// 失敗した場合、エラー内容を含んだ文字列。
 pub fn decode_read_word_response(buf: &[u8], target: SLMPDevice) -> Vec<SLMPDeviceData<u16>> {
     let mut ret = Vec::new();
     let mut idx = target.addr;
@@ -106,6 +138,13 @@ pub fn decode_read_word_response(buf: &[u8], target: SLMPDevice) -> Vec<SLMPDevi
     ret
 }
 
+/// 単一の連続したビットデバイスの書き込み要求送信(16bitアドレス版)
+/// # 引数
+/// * `connection_info` - SLMP接続情報
+/// * `timeout` - SLMPコマンドのタイムアウト
+/// * `target` - 書き込むデバイスのリスト
+/// # 返値
+/// 発行したコマンドのシリアル
 pub fn send_write_bit_cmd_16(
     connection_info: &mut SLMPConnectionInfo,
     timeout: u16,
@@ -129,6 +168,13 @@ pub fn send_write_bit_cmd_16(
     connection_info.send_cmd(timeout, SLMPCommand::DeviceWrite, s_cmd, buf.as_slice())
 }
 
+/// 単一の連続したビットデバイスの書き込み要求送信(32bitアドレス版)
+/// # 引数
+/// * `connection_info` - SLMP接続情報
+/// * `timeout` - SLMPコマンドのタイムアウト
+/// * `target` - 書き込むデバイスのリスト
+/// # 返値
+/// 発行したコマンドのシリアル
 pub fn send_write_bit_cmd_32(
     connection_info: &mut SLMPConnectionInfo,
     timeout: u16,
@@ -152,6 +198,13 @@ pub fn send_write_bit_cmd_32(
     connection_info.send_cmd(timeout, SLMPCommand::DeviceWrite, s_cmd, buf.as_slice())
 }
 
+/// 単一の連続したワードデバイスの書き込み要求送信(16bitアドレス版)
+/// # 引数
+/// * `connection_info` - SLMP接続情報
+/// * `timeout` - SLMPコマンドのタイムアウト
+/// * `target` - 書き込むデバイスのリスト
+/// # 返値
+/// 発行したコマンドのシリアル
 pub fn send_write_word_cmd_16(
     connection_info: &mut SLMPConnectionInfo,
     timeout: u16,
@@ -175,6 +228,13 @@ pub fn send_write_word_cmd_16(
     connection_info.send_cmd(timeout, SLMPCommand::DeviceWrite, s_cmd, buf.as_slice())
 }
 
+/// 単一の連続したワードデバイスの書き込み要求送信(32bitアドレス版)
+/// # 引数
+/// * `connection_info` - SLMP接続情報
+/// * `timeout` - SLMPコマンドのタイムアウト
+/// * `target` - 書き込むデバイスのリスト
+/// # 返値
+/// 発行したコマンドのシリアル
 pub fn send_write_word_cmd_32(
     connection_info: &mut SLMPConnectionInfo,
     timeout: u16,
@@ -198,6 +258,14 @@ pub fn send_write_word_cmd_32(
     connection_info.send_cmd(timeout, SLMPCommand::DeviceWrite, s_cmd, buf.as_slice())
 }
 
+/// 指定したデバイスの読み取り要求送信(16bitアドレス版)
+/// # 引数
+/// * `connection_info` - SLMP接続情報
+/// * `timeout` - SLMPコマンドのタイムアウト
+/// * `target_word` - ワードアクセスするデバイスのリスト
+/// * `target_dword` - ダブルワードアクセスするデバイスのリスト
+/// # 返値
+/// 発行したコマンドのシリアル
 pub fn send_read_random_cmd_16(
     connection_info: &mut SLMPConnectionInfo,
     timeout: u16,
@@ -234,6 +302,14 @@ pub fn send_read_random_cmd_16(
     )
 }
 
+/// 指定したデバイスの読み取り要求送信(32bitアドレス版)
+/// # 引数
+/// * `connection_info` - SLMP接続情報
+/// * `timeout` - SLMPコマンドのタイムアウト
+/// * `target_word` - ワードアクセスするデバイスのリスト
+/// * `target_dword` - ダブルワードアクセスするデバイスのリスト
+/// # 返値
+/// 発行したコマンドのシリアル
 pub fn send_read_random_cmd_32(
     connection_info: &mut SLMPConnectionInfo,
     timeout: u16,
@@ -270,6 +346,13 @@ pub fn send_read_random_cmd_32(
     )
 }
 
+/// 指定したデバイスの読み取り要求に対する応答の処理
+/// # 引数
+/// * `buf` - 応答内容の入ったバッファ
+/// * `target_word` - 要求時に指定したワードアクセスするデバイスのリスト
+/// * `target_dword` - 要求時に指定したダブルワードアクセスするデバイスのリスト
+/// # 返値
+/// ワードデータとダブルワードそれぞれのデバイスリスト
 pub fn decode_read_random_response(
     buf: &[u8],
     target_word: &[SLMPDevice],
@@ -300,6 +383,13 @@ pub fn decode_read_random_response(
     (ret_word, ret_dword)
 }
 
+/// 指定したビットデバイスの書込み要求送信(16bitアドレス版)
+/// # 引数
+/// * `connection_info` - SLMP接続情報
+/// * `timeout` - SLMPコマンドのタイムアウト
+/// * `targets` - ビットデバイスデータのリスト
+/// # 返値
+/// 発行したコマンドのシリアル
 pub fn send_write_random_bits_cmd_16(
     connection_info: &mut SLMPConnectionInfo,
     timeout: u16,
@@ -328,6 +418,13 @@ pub fn send_write_random_bits_cmd_16(
         buf.as_slice(),
     )
 }
+/// 指定したビットデバイスの書込み要求送信(32bitアドレス版)
+/// # 引数
+/// * `connection_info` - SLMP接続情報
+/// * `timeout` - SLMPコマンドのタイムアウト
+/// * `targets` - ビットデバイスデータのリスト
+/// # 返値
+/// 発行したコマンドのシリアル
 pub fn send_write_random_bits_cmd_32(
     connection_info: &mut SLMPConnectionInfo,
     timeout: u16,
@@ -357,6 +454,14 @@ pub fn send_write_random_bits_cmd_32(
         buf.as_slice(),
     )
 }
+/// 指定したワードデバイスの書込み要求送信(16bitアドレス版)
+/// # 引数
+/// * `connection_info` - SLMP接続情報
+/// * `timeout` - SLMPコマンドのタイムアウト
+/// * `target_word` - ワードデバイスデータのリスト
+/// * `target_dword` - ダブルワードデバイスデータのリスト
+/// # 返値
+/// 発行したコマンドのシリアル
 pub fn send_write_random_words_cmd_16(
     connection_info: &mut SLMPConnectionInfo,
     timeout: u16,
@@ -399,6 +504,14 @@ pub fn send_write_random_words_cmd_16(
         buf.as_slice(),
     )
 }
+/// 指定したワードデバイスの書込み要求送信(32bitアドレス版)
+/// # 引数
+/// * `connection_info` - SLMP接続情報
+/// * `timeout` - SLMPコマンドのタイムアウト
+/// * `target_word` - ワードデバイスデータのリスト
+/// * `target_dword` - ダブルワードデバイスデータのリスト
+/// # 返値
+/// 発行したコマンドのシリアル
 pub fn send_write_random_words_cmd_32(
     connection_info: &mut SLMPConnectionInfo,
     timeout: u16,
@@ -441,6 +554,14 @@ pub fn send_write_random_words_cmd_32(
         buf.as_slice(),
     )
 }
+/// モニタデバイスへ登録要求送信(16bitアドレス版)
+/// # 引数
+/// * `connection_info` - SLMP接続情報
+/// * `timeout` - SLMPコマンドのタイムアウト
+/// * `target_word` - ワードアクセスするデバイスのリスト
+/// * `target_dword` - ダブルワードアクセスするデバイスのリスト
+/// # 返値
+/// 発行したコマンドのシリアル
 pub fn send_entry_monitor_device_cmd_16(
     connection_info: &mut SLMPConnectionInfo,
     timeout: u16,
@@ -476,6 +597,14 @@ pub fn send_entry_monitor_device_cmd_16(
         buf.as_slice(),
     )
 }
+/// モニタデバイスへ登録要求送信(32bitアドレス版)
+/// # 引数
+/// * `connection_info` - SLMP接続情報
+/// * `timeout` - SLMPコマンドのタイムアウト
+/// * `target_word` - ワードアクセスするデバイスのリスト
+/// * `target_dword` - ダブルワードアクセスするデバイスのリスト
+/// # 返値
+/// 発行したコマンドのシリアル
 pub fn send_entry_monitor_device_cmd_32(
     connection_info: &mut SLMPConnectionInfo,
     timeout: u16,
@@ -511,12 +640,26 @@ pub fn send_entry_monitor_device_cmd_32(
         buf.as_slice(),
     )
 }
+/// 登録したデバイスの読み取り要求送信
+/// # 引数
+/// * `connection_info` - SLMP接続情報
+/// * `timeout` - SLMPコマンドのタイムアウト
+/// # 返値
+/// 発行したコマンドのシリアル
 pub fn send_execute_monitor_cmd(
     connection_info: &mut SLMPConnectionInfo,
     timeout: u16,
 ) -> Option<u16> {
     connection_info.send_cmd(timeout, SLMPCommand::ExecuteMonitor, 0, &[])
 }
+/// 複数の連続したデバイス(デバイスブロック)の読み取り要求送信(16bitアドレス版)
+/// # 引数
+/// * `connection_info` - SLMP接続情報
+/// * `timeout` - SLMPコマンドのタイムアウト
+/// * `target_word` - ワードアクセスするデバイスブロックのリスト
+/// * `target_bit` - ビットアクセスするデバイスブロックのリスト
+/// # 返値
+/// 発行したコマンドのシリアル
 pub fn send_read_block_cmd_16(
     connection_info: &mut SLMPConnectionInfo,
     timeout: u16,
@@ -548,6 +691,14 @@ pub fn send_read_block_cmd_16(
 
     connection_info.send_cmd(timeout, SLMPCommand::ReadBlock, s_cmd, &buf)
 }
+/// 複数の連続したデバイス(デバイスブロック)の読み取り要求送信(32bitアドレス版)
+/// # 引数
+/// * `connection_info` - SLMP接続情報
+/// * `timeout` - SLMPコマンドのタイムアウト
+/// * `target_word` - ワードアクセスするデバイスブロックのリスト
+/// * `target_bit` - ビットアクセスするデバイスブロックのリスト
+/// # 返値
+/// 発行したコマンドのシリアル
 pub fn send_read_block_cmd_32(
     connection_info: &mut SLMPConnectionInfo,
     timeout: u16,
@@ -579,6 +730,13 @@ pub fn send_read_block_cmd_32(
 
     connection_info.send_cmd(timeout, SLMPCommand::ReadBlock, s_cmd, &buf)
 }
+/// デバイスブロック読み出し要求に対する応答の処理
+/// # 引数
+/// * `buf` - 応答内容の入ったバッファ
+/// * `target_word` - 要求時に指定したワードアクセスするデバイスブロックのリスト
+/// * `target_bit` - 要求時に指定したビットアクセスするデバイスブロックのリスト
+/// # 返値
+/// データを含んだデバイスブロックのリスト
 pub fn decode_read_block_response(
     buf: &[u8],
     target_word: &[SLMPDeviceBlock],
@@ -611,6 +769,14 @@ pub fn decode_read_block_response(
 
     (ret_w, ret_b)
 }
+/// 複数の連続したデバイス(デバイスブロック)の書込み要求送信(16bitアドレス版)
+/// # 引数
+/// * `connection_info` - SLMP接続情報
+/// * `timeout` - SLMPコマンドのタイムアウト
+/// * `target_word` - データを含んだワードアクセスするデバイスブロックのリスト
+/// * `target_bit` - データを含んだビットアクセスするデバイスブロックのリスト
+/// # 返値
+/// 発行したコマンドのシリアル
 pub fn send_write_block_cmd_16(
     connection_info: &mut SLMPConnectionInfo,
     timeout: u16,
@@ -637,6 +803,14 @@ pub fn send_write_block_cmd_16(
     }
     connection_info.send_cmd(timeout, SLMPCommand::WriteBlock, s_cmd, &buf)
 }
+/// 複数の連続したデバイス(デバイスブロック)の書込み要求送信(32bitアドレス版)
+/// # 引数
+/// * `connection_info` - SLMP接続情報
+/// * `timeout` - SLMPコマンドのタイムアウト
+/// * `target_word` - データを含んだワードアクセスするデバイスブロックのリスト
+/// * `target_bit` - データを含んだビットアクセスするデバイスブロックのリスト
+/// # 返値
+/// 発行したコマンドのシリアル
 pub fn send_write_block_cmd_32(
     connection_info: &mut SLMPConnectionInfo,
     timeout: u16,
