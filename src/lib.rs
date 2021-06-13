@@ -135,7 +135,7 @@ mod tests {
         let buf = [0x31, 0x32, 0x34];
         let seq = send_self_test_cmd(&mut connection_info, 40, &buf);
         let (seq_r, buf_r, end_code) = connection_info.recv_cmd();
-        assert_eq!(seq, seq_r);
+        assert_eq!(seq.unwrap(), seq_r);
         assert_eq!(end_code, Some(SLMPEndCode::Success));
         let ret = decode_self_test_response(&buf_r);
         assert_eq!(ret.len(), 3);

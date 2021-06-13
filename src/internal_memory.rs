@@ -278,13 +278,13 @@ pub fn decode_read_random_response(
     let mut ret_word = Vec::new();
     let mut ret_dword = Vec::new();
     let mut tmp_buf = Vec::new();
-    tmp_buf.copy_from_slice(buf);
+    tmp_buf.extend_from_slice(buf);
     for t in target_word {
         let d_low = tmp_buf.remove(0) as u16;
         let d_high = tmp_buf.remove(0) as u16;
         ret_word.push(SLMPDeviceData {
             dev: *t,
-            value: d_low + d_high << 8,
+            value: d_low + (d_high << 8),
         });
     }
     for t in target_dword {
@@ -662,4 +662,101 @@ pub fn send_write_block_cmd_32(
         buf.extend_from_slice(&dbd.pack32());
     }
     connection_info.send_cmd(timeout, SLMPCommand::WriteBlock, s_cmd, &buf)
+}
+#[cfg(test)]
+mod tests {
+    use crate::{
+        decode_read_bit_response, decode_read_random_response, decode_read_word_response,
+        SLMPDevice, SLMPDeviceCode,
+    };
+
+    #[test]
+    pub fn test_decode_read_random_response() {
+        let word_devices = [
+            SLMPDevice {
+                d_code: SLMPDeviceCode::D,
+                addr: 0,
+            },
+            SLMPDevice {
+                d_code: SLMPDeviceCode::TN,
+                addr: 0,
+            },
+            SLMPDevice {
+                d_code: SLMPDeviceCode::M,
+                addr: 100,
+            },
+            SLMPDevice {
+                d_code: SLMPDeviceCode::X,
+                addr: 0x20,
+            },
+        ];
+        let dword_devices = [
+            SLMPDevice {
+                d_code: SLMPDeviceCode::D,
+                addr: 1500,
+            },
+            SLMPDevice {
+                d_code: SLMPDeviceCode::Y,
+                addr: 0x160,
+            },
+            SLMPDevice {
+                d_code: SLMPDeviceCode::M,
+                addr: 1111,
+            },
+        ];
+        let buf = [
+            0x95, 0x19, 0x02, 0x12, 0x30, 0x20, 0x49, 0x48, 0x4e, 0x4f, 0x54, 0x4c, 0xaf, 0xb9,
+            0xde, 0xc3, 0xb7, 0xbc, 0xdd, 0xba,
+        ];
+        let (words, dwords) = decode_read_random_response(&buf, &word_devices, &dword_devices);
+        assert_eq!(words.len(), 4);
+        assert_eq!(words[0].value, 0x1995);
+        assert_eq!(words[1].value, 0x1202);
+        assert_eq!(words[2].value, 0x2030);
+        assert_eq!(words[3].value, 0x4849);
+        assert_eq!(dwords.len(), 3);
+        assert_eq!(dwords[0].value, 0x4c544f4e);
+        assert_eq!(dwords[1].value, 0xc3deb9af);
+        assert_eq!(dwords[2].value, 0xbaddbcb7);
+    }
+    #[test]
+    pub fn test_decode_read_bit_response() {
+        let buf = [0x00, 0x01, 0x00, 0x11];
+        let dev = SLMPDevice {
+            d_code: SLMPDeviceCode::M,
+            addr: 100,
+        };
+        let ret = decode_read_bit_response(&buf, dev).unwrap();
+        assert_eq!(ret.len(), 8);
+        assert_eq!(ret[0].value, false);
+        assert_eq!(ret[1].value, false);
+        assert_eq!(ret[2].value, false);
+        assert_eq!(ret[3].value, true);
+        assert_eq!(ret[4].value, false);
+        assert_eq!(ret[5].value, false);
+        assert_eq!(ret[6].value, true);
+        assert_eq!(ret[7].value, true);
+    }
+    #[test]
+    pub fn test_decode_read_word_response() {
+        let buf = [0x34, 0x12, 0x02, 0x00];
+        let dev = SLMPDevice {
+            d_code: SLMPDeviceCode::M,
+            addr: 100,
+        };
+        let ret = decode_read_word_response(&buf, dev);
+        assert_eq!(ret.len(), 2);
+        assert_eq!(ret[0].value, 0x1234);
+        assert_eq!(ret[1].value, 0x2);
+        let buf = [0x34, 0x12, 0x02, 0x00, 0xef, 0x1d];
+        let dev = SLMPDevice {
+            d_code: SLMPDeviceCode::TN,
+            addr: 100,
+        };
+        let ret = decode_read_word_response(&buf, dev);
+        assert_eq!(ret.len(), 3);
+        assert_eq!(ret[0].value, 0x1234);
+        assert_eq!(ret[1].value, 0x2);
+        assert_eq!(ret[2].value, 0x1def);
+    }
 }
