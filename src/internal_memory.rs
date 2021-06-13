@@ -24,12 +24,17 @@ pub fn send_read_cmd_16(
         s_cmd = 1;
         if buf[4] & 1 == 1 {
             // ビットデータは必ず偶数個
-            buf[4] += 1;
+            if buf[4] == 0xff {
+                buf[5] += 1;
+                buf[4] = 0;
+            } else {
+                buf[4] += 1;
+            }
         }
     } else {
         s_cmd = 0;
     }
-    connection_info.send_cmd(timeout, SLMPCommand::MemoryRead, s_cmd, &buf)
+    connection_info.send_cmd(timeout, SLMPCommand::DeviceRead, s_cmd, &buf)
 }
 
 pub fn send_read_cmd_32(
@@ -51,12 +56,17 @@ pub fn send_read_cmd_32(
         s_cmd = 3;
         if buf[4] & 1 == 1 {
             // ビットデータは必ず偶数個
-            buf[4] += 1;
+            if buf[4] == 0xff {
+                buf[5] += 1;
+                buf[4] = 0;
+            } else {
+                buf[4] += 1;
+            }
         }
     } else {
         s_cmd = 2;
     }
-    connection_info.send_cmd(timeout, SLMPCommand::MemoryRead, s_cmd, &buf)
+    connection_info.send_cmd(timeout, SLMPCommand::DeviceRead, s_cmd, &buf)
 }
 
 pub fn decode_read_bit_response(buf: &[u8], target: SLMPDevice) -> Vec<SLMPDeviceData<bool>> {
@@ -113,7 +123,7 @@ pub fn send_write_bit_cmd_16(
     for d in d_buf.iter() {
         buf.push(*d);
     }
-    connection_info.send_cmd(timeout, SLMPCommand::MemoryWrite, s_cmd, buf.as_slice())
+    connection_info.send_cmd(timeout, SLMPCommand::DeviceWrite, s_cmd, buf.as_slice())
 }
 
 pub fn send_write_bit_cmd_32(
@@ -136,7 +146,7 @@ pub fn send_write_bit_cmd_32(
     for d in d_buf.iter() {
         buf.push(*d);
     }
-    connection_info.send_cmd(timeout, SLMPCommand::MemoryWrite, s_cmd, buf.as_slice())
+    connection_info.send_cmd(timeout, SLMPCommand::DeviceWrite, s_cmd, buf.as_slice())
 }
 
 pub fn send_write_word_cmd_16(
@@ -159,7 +169,7 @@ pub fn send_write_word_cmd_16(
     for d in d_buf.iter() {
         buf.push(*d);
     }
-    connection_info.send_cmd(timeout, SLMPCommand::MemoryWrite, s_cmd, buf.as_slice())
+    connection_info.send_cmd(timeout, SLMPCommand::DeviceWrite, s_cmd, buf.as_slice())
 }
 
 pub fn send_write_word_cmd_32(
@@ -182,7 +192,7 @@ pub fn send_write_word_cmd_32(
     for d in d_buf.iter() {
         buf.push(*d);
     }
-    connection_info.send_cmd(timeout, SLMPCommand::MemoryWrite, s_cmd, buf.as_slice())
+    connection_info.send_cmd(timeout, SLMPCommand::DeviceWrite, s_cmd, buf.as_slice())
 }
 
 pub fn send_read_random_cmd_16(

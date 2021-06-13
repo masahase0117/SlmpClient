@@ -294,8 +294,8 @@ pub enum SLMPClearMode {
     AllClear = 0x02,
 }
 
-use std::error::Error;
 use std::io;
+use std::io::{Read, Write};
 use std::net::{SocketAddr, TcpStream, UdpSocket};
 use std::time::Duration;
 
@@ -315,7 +315,6 @@ impl TCPorUDP {
     /// 送信したバイト数
     ///
     pub fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
-        use std::io::Write;
         use TCPorUDP::*;
         match self {
             TCP(stream) => stream.write(buf),
@@ -333,7 +332,7 @@ impl TCPorUDP {
     pub fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
         use TCPorUDP::*;
         match self {
-            TCP(stream) => stream.peek(buf),
+            TCP(stream) => stream.read(buf),
             UDP(socket, _) => socket.recv(buf),
         }
     }
