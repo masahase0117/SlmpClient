@@ -11,7 +11,7 @@ pub fn send_read_cmd_16(
     target: SLMPDevice,
     count: u16,
     is_bit: bool,
-) -> u16 {
+) -> Option<u16> {
     let buf1 = target.pack16();
     let mut buf = [0u8; 6];
     for i in 0..4 {
@@ -43,7 +43,7 @@ pub fn send_read_cmd_32(
     target: SLMPDevice,
     count: u16,
     is_bit: bool,
-) -> u16 {
+) -> Option<u16> {
     let buf1 = target.pack32();
     let mut buf = [0u8; 8];
     for i in 0..6 {
@@ -69,10 +69,13 @@ pub fn send_read_cmd_32(
     connection_info.send_cmd(timeout, SLMPCommand::DeviceRead, s_cmd, &buf)
 }
 
-pub fn decode_read_bit_response(buf: &[u8], target: SLMPDevice) -> Vec<SLMPDeviceData<bool>> {
+pub fn decode_read_bit_response(
+    buf: &[u8],
+    target: SLMPDevice,
+) -> Result<Vec<SLMPDeviceData<bool>>, &'static str> {
     let mut ret = Vec::new();
     let mut idx = target.addr;
-    let bs = unpack_bits_by_bit(buf);
+    let bs = unpack_bits_by_bit(buf)?;
     for b in bs {
         ret.push(SLMPDeviceData::<bool> {
             dev: SLMPDevice {
@@ -83,7 +86,7 @@ pub fn decode_read_bit_response(buf: &[u8], target: SLMPDevice) -> Vec<SLMPDevic
         });
         idx += 1;
     }
-    ret
+    Ok(ret)
 }
 
 pub fn decode_read_word_response(buf: &[u8], target: SLMPDevice) -> Vec<SLMPDeviceData<u16>> {
@@ -107,7 +110,7 @@ pub fn send_write_bit_cmd_16(
     connection_info: &mut SLMPConnectionInfo,
     timeout: u16,
     targets: &[SLMPDeviceData<bool>],
-) -> u16 {
+) -> Option<u16> {
     let s_cmd = 1;
     let mut buf = Vec::new();
     for d in targets[0].dev.pack16().iter() {
@@ -130,7 +133,7 @@ pub fn send_write_bit_cmd_32(
     connection_info: &mut SLMPConnectionInfo,
     timeout: u16,
     targets: &[SLMPDeviceData<bool>],
-) -> u16 {
+) -> Option<u16> {
     let s_cmd = 3;
     let mut buf = Vec::new();
     for d in targets[0].dev.pack32().iter() {
@@ -153,7 +156,7 @@ pub fn send_write_word_cmd_16(
     connection_info: &mut SLMPConnectionInfo,
     timeout: u16,
     targets: &[SLMPDeviceData<u16>],
-) -> u16 {
+) -> Option<u16> {
     let s_cmd = 0;
     let mut buf = Vec::new();
     for d in targets[0].dev.pack16().iter() {
@@ -176,7 +179,7 @@ pub fn send_write_word_cmd_32(
     connection_info: &mut SLMPConnectionInfo,
     timeout: u16,
     targets: &[SLMPDeviceData<u16>],
-) -> u16 {
+) -> Option<u16> {
     let s_cmd = 2;
     let mut buf = Vec::new();
     for d in targets[0].dev.pack32().iter() {
@@ -200,14 +203,16 @@ pub fn send_read_random_cmd_16(
     timeout: u16,
     target_word: &[SLMPDevice],
     target_dword: &[SLMPDevice],
-) -> u16 {
+) -> Option<u16> {
     let s_cmd = 0;
     let mut buf = Vec::new();
     if target_word.len() > 0xff {
-        panic!("Too many word target");
+        eprintln!("Too many word target");
+        return None;
     }
     if target_dword.len() > 0xff {
-        panic!("Too many dword target")
+        eprintln!("Too many dword target");
+        return None;
     }
     buf.push(target_word.len() as u8);
     buf.push(target_dword.len() as u8);
@@ -234,14 +239,16 @@ pub fn send_read_random_cmd_32(
     timeout: u16,
     target_word: &[SLMPDevice],
     target_dword: &[SLMPDevice],
-) -> u16 {
+) -> Option<u16> {
     let s_cmd = 2;
     let mut buf = Vec::new();
     if target_word.len() > 0xff {
-        panic!("Too many word target");
+        eprintln!("Too many word target");
+        return None;
     }
     if target_dword.len() > 0xff {
-        panic!("Too many dword target")
+        eprintln!("Too many dword target");
+        return None;
     }
     buf.push(target_word.len() as u8);
     buf.push(target_dword.len() as u8);
@@ -297,11 +304,12 @@ pub fn send_write_random_bits_cmd_16(
     connection_info: &mut SLMPConnectionInfo,
     timeout: u16,
     targets: &[SLMPDeviceData<bool>],
-) -> u16 {
+) -> Option<u16> {
     let s_cmd = 1;
     let mut buf = Vec::new();
     if targets.len() > 0xff {
-        panic!("Too many targets")
+        eprintln!("Too many targets");
+        return None;
     }
     buf.push(targets.len() as u8);
     for dd in targets {
@@ -324,11 +332,12 @@ pub fn send_write_random_bits_cmd_32(
     connection_info: &mut SLMPConnectionInfo,
     timeout: u16,
     targets: &[SLMPDeviceData<bool>],
-) -> u16 {
+) -> Option<u16> {
     let s_cmd = 3;
     let mut buf = Vec::new();
     if targets.len() > 0xff {
-        panic!("Too many targets")
+        eprintln!("Too many targets");
+        return None;
     }
     buf.push(targets.len() as u8);
     for dd in targets {
@@ -353,14 +362,16 @@ pub fn send_write_random_words_cmd_16(
     timeout: u16,
     target_word: &[SLMPDeviceData<u16>],
     target_dword: &[SLMPDeviceData<u32>],
-) -> u16 {
+) -> Option<u16> {
     let s_cmd = 0;
     let mut buf = Vec::new();
     if target_word.len() > 0xff {
-        panic!("Too many word target");
+        eprintln!("Too many word target");
+        return None;
     }
     if target_dword.len() > 0xff {
-        panic!("Too many dword target")
+        eprintln!("Too many dword target");
+        return None;
     }
     buf.push(target_word.len() as u8);
     buf.push(target_dword.len() as u8);
@@ -393,14 +404,16 @@ pub fn send_write_random_words_cmd_32(
     timeout: u16,
     target_word: &[SLMPDeviceData<u16>],
     target_dword: &[SLMPDeviceData<u32>],
-) -> u16 {
+) -> Option<u16> {
     let s_cmd = 2;
     let mut buf = Vec::new();
     if target_word.len() > 0xff {
-        panic!("Too many word target");
+        eprintln!("Too many word target");
+        return None;
     }
     if target_dword.len() > 0xff {
-        panic!("Too many dword target")
+        eprintln!("Too many dword target");
+        return None;
     }
     buf.push(target_word.len() as u8);
     buf.push(target_dword.len() as u8);
@@ -433,14 +446,16 @@ pub fn send_entry_monitor_device_cmd_16(
     timeout: u16,
     target_word: &[SLMPDevice],
     target_dword: &[SLMPDevice],
-) -> u16 {
+) -> Option<u16> {
     let s_cmd = 0;
     let mut buf = Vec::new();
     if target_word.len() > 0xff {
-        panic!("Too many word target");
+        eprintln!("Too many word target");
+        return None;
     }
     if target_dword.len() > 0xff {
-        panic!("Too many dword target")
+        eprintln!("Too many dword target");
+        return None;
     }
     buf.push(target_word.len() as u8);
     buf.push(target_dword.len() as u8);
@@ -466,14 +481,16 @@ pub fn send_entry_monitor_device_cmd_32(
     timeout: u16,
     target_word: &[SLMPDevice],
     target_dword: &[SLMPDevice],
-) -> u16 {
+) -> Option<u16> {
     let s_cmd = 2;
     let mut buf = Vec::new();
     if target_word.len() > 0xff {
-        panic!("Too many word target");
+        eprintln!("Too many word target");
+        return None;
     }
     if target_dword.len() > 0xff {
-        panic!("Too many dword target")
+        eprintln!("Too many dword target");
+        return None;
     }
     buf.push(target_word.len() as u8);
     buf.push(target_dword.len() as u8);
@@ -494,7 +511,10 @@ pub fn send_entry_monitor_device_cmd_32(
         buf.as_slice(),
     )
 }
-pub fn send_execute_monitor_cmd(connection_info: &mut SLMPConnectionInfo, timeout: u16) -> u16 {
+pub fn send_execute_monitor_cmd(
+    connection_info: &mut SLMPConnectionInfo,
+    timeout: u16,
+) -> Option<u16> {
     connection_info.send_cmd(timeout, SLMPCommand::ExecuteMonitor, 0, &[])
 }
 pub fn send_read_block_cmd_16(
@@ -502,14 +522,16 @@ pub fn send_read_block_cmd_16(
     timeout: u16,
     target_word: &[SLMPDeviceBlock],
     target_bit: &[SLMPDeviceBlock],
-) -> u16 {
+) -> Option<u16> {
     let s_cmd = 0;
     let mut buf = Vec::new();
     if target_word.len() > 0xff {
-        panic!("Too many word target");
+        eprintln!("Too many word target");
+        return None;
     }
     if target_bit.len() > 0xff {
-        panic!("Too many bit target")
+        eprintln!("Too many bit target");
+        return None;
     }
     buf.push(target_word.len() as u8);
     buf.push(target_bit.len() as u8);
@@ -531,14 +553,16 @@ pub fn send_read_block_cmd_32(
     timeout: u16,
     target_word: &[SLMPDeviceBlock],
     target_bit: &[SLMPDeviceBlock],
-) -> u16 {
+) -> Option<u16> {
     let s_cmd = 2;
     let mut buf = Vec::new();
     if target_word.len() > 0xff {
-        panic!("Too many word target");
+        eprintln!("Too many word target");
+        return None;
     }
     if target_bit.len() > 0xff {
-        panic!("Too many bit target")
+        eprintln!("Too many bit target");
+        return None;
     }
     buf.push(target_word.len() as u8);
     buf.push(target_bit.len() as u8);
@@ -592,14 +616,16 @@ pub fn send_write_block_cmd_16(
     timeout: u16,
     target_word: &[SLMPDeviceBlockData<u16>],
     target_bit: &[SLMPDeviceBlockData<bool>],
-) -> u16 {
+) -> Option<u16> {
     let s_cmd = 0;
     let mut buf = Vec::new();
     if target_word.len() > 0xff {
-        panic!("Too many word target");
+        eprintln!("Too many word target");
+        return None;
     }
     if target_bit.len() > 0xff {
-        panic!("Too many bit target")
+        eprintln!("Too many bit target");
+        return None;
     }
     buf.push(target_word.len() as u8);
     buf.push(target_bit.len() as u8);
@@ -616,14 +642,16 @@ pub fn send_write_block_cmd_32(
     timeout: u16,
     target_word: &[SLMPDeviceBlockData<u16>],
     target_bit: &[SLMPDeviceBlockData<bool>],
-) -> u16 {
+) -> Option<u16> {
     let s_cmd = 2;
     let mut buf = Vec::new();
     if target_word.len() > 0xff {
-        panic!("Too many word target");
+        eprintln!("Too many word target");
+        return None;
     }
     if target_bit.len() > 0xff {
-        panic!("Too many bit target")
+        eprintln!("Too many bit target");
+        return None;
     }
     buf.push(target_word.len() as u8);
     buf.push(target_bit.len() as u8);

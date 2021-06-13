@@ -162,7 +162,8 @@ impl SLMPConnectionInfo {
         let mut count = 0;
         while self.buf.len() < 15 {
             if count > 3 {
-                panic!("3times retry finish")
+                eprintln!("3times retry finish");
+                return (0, req_data, end_code);
             }
             let recv_result = self.read(&mut buf);
             match recv_result {
@@ -204,7 +205,8 @@ impl SLMPConnectionInfo {
                 count = 0;
                 while self.buf.len() < (dl + 4) as usize {
                     if count > 3 {
-                        panic!("3times retry finish")
+                        eprintln!("3times retry finish");
+                        return (ser_no, req_data, end_code);
                     }
                     let recv_result = self.read(&mut buf);
                     match recv_result {
@@ -261,7 +263,8 @@ impl SLMPConnectionInfo {
                 count = 0;
                 while self.buf.len() < dl as usize {
                     if count > 3 {
-                        panic!("3times retry finish")
+                        eprintln!("3times retry finish");
+                        return (ser_no, req_data, end_code);
                     }
                     let recv_result = self.read(&mut buf);
                     match recv_result {
@@ -279,7 +282,8 @@ impl SLMPConnectionInfo {
             }
             // 上記以外
             _ => {
-                panic!("Wrong Data received");
+                eprintln!("Wrong Data received");
+                return (0, req_data, None);
             }
         };
 
@@ -304,7 +308,7 @@ impl SLMPConnectionInfo {
         cmd: SLMPCommand,
         sub_command: u16,
         content_data: &[u8],
-    ) -> u16 {
+    ) -> Option<u16> {
         let mut seq_no = self.get_new_serial();
         let slmp_header = SlmpSubHeaderReq {
             net_no: self.network,
@@ -327,7 +331,7 @@ impl SLMPConnectionInfo {
                     if send_size != write_buf.len() {
                         eprintln!("write size error.");
                         if i == 2 {
-                            panic!("3times retry finish")
+                            return None;
                         }
                     } else {
                         break;
@@ -336,12 +340,12 @@ impl SLMPConnectionInfo {
                 Err(e) => {
                     eprintln!("{}", e.to_string());
                     if i == 2 {
-                        panic!("3times retry finish")
+                        return None;
                     }
                 }
             }
         }
-        seq_no
+        Some(seq_no)
     }
 }
 fn make_frame_header(

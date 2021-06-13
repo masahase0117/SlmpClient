@@ -26,7 +26,7 @@ mod tests {
     fn test_unpack_bits_by_bit() {
         let data = [0x00u8, 0x01, 0x00, 0x11];
         let ret = [false, false, false, true, false, false, true, true];
-        let buf = unpack_bits_by_bit(&data);
+        let buf = unpack_bits_by_bit(&data).unwrap();
         assert_eq!(buf.as_slice(), ret)
     }
     #[test]
@@ -40,7 +40,7 @@ mod tests {
     fn test_bits_by_bit() {
         let data = [false, false, false, true, false, false, true, true];
         let buf = pack_bits_by_bit(&data);
-        let ret = unpack_bits_by_bit(buf.as_slice());
+        let ret = unpack_bits_by_bit(buf.as_slice()).unwrap();
         assert_eq!(ret.as_slice(), data)
     }
     #[test]
@@ -265,7 +265,7 @@ pub fn pack_bits_by_bit(data: &[bool]) -> Vec<u8> {
                     false => buf.push(tmp),
                 }
             }
-            _ => panic!(),
+            _ => unreachable!(),
         }
     }
     buf
@@ -354,10 +354,10 @@ pub fn unpack_bits_by_bit(data: &[u8]) -> Vec<bool> {
                 buf.push(true);
                 buf.push(true);
             }
-            _ => panic!(),
+            _ => return Err("Invalid Input Data"),
         }
     }
-    buf
+    Ok(buf)
 }
 
 /// ワード単位にパックされたビットデータを分解
@@ -446,7 +446,7 @@ pub fn unpack_dwords_by_dword(data: &[u8]) -> Vec<u32> {
                 let tmp = buf.pop().unwrap();
                 buf.push(tmp + (d << 24));
             }
-            _ => panic!("{}", a),
+            _ => unreachable!("{}", a),
         }
     }
     buf
@@ -874,20 +874,21 @@ impl SLMPDeviceBlockData<bool> {
     pub fn sets(&mut self, buf: &[bool]) {
         self.value.copy_from_slice(buf);
     }
-    pub fn set(&mut self, dd: SLMPDeviceData<bool>) {
+    pub fn set(&mut self, dd: SLMPDeviceData<bool>) -> Result<(), &'static str> {
         if dd.dev.d_code != self.device_block.top_device.d_code {
-            panic!("Different device")
+            return Err("Different device");
         }
         if dd.dev.addr < self.device_block.top_device.addr {
-            panic!("Address Not in range")
+            return Err("Address Not in range");
         }
         let addr_max =
             self.device_block.top_device.addr + (self.device_block.count as u32) * 16 - 1;
         if dd.dev.addr > addr_max {
-            panic!("Address Not in range")
+            return Err("Address Not in range");
         }
         let d_addr = (dd.dev.addr - self.device_block.top_device.addr) as usize;
         self.value[d_addr] = dd.value;
+        Ok(())
     }
     pub fn gets(&self) -> Vec<SLMPDeviceData<bool>> {
         let mut ret = Vec::new();
@@ -903,23 +904,23 @@ impl SLMPDeviceBlockData<bool> {
         }
         ret
     }
-    pub fn get(&self, dev: SLMPDevice) -> SLMPDeviceData<bool> {
+    pub fn get(&self, dev: SLMPDevice) -> Result<SLMPDeviceData<bool>, &'static str> {
         if dev.d_code != self.device_block.top_device.d_code {
-            panic!("Different device")
+            return Err("Different device");
         }
         if dev.addr < self.device_block.top_device.addr {
-            panic!("Address Not in range")
+            return Err("Address Not in range");
         }
         let addr_max =
             self.device_block.top_device.addr + (self.device_block.count as u32) * 16 - 1;
         if dev.addr > addr_max {
-            panic!("Address Not in range")
+            return Err("Address Not in range");
         }
         let d_addr = (dev.addr - self.device_block.top_device.addr) as usize;
-        SLMPDeviceData::<bool> {
+        Ok(SLMPDeviceData::<bool> {
             dev,
             value: self.value[d_addr],
-        }
+        })
     }
     pub fn pack16(&self) -> Vec<u8> {
         let mut buf = Vec::from(self.device_block.pack16());
@@ -952,19 +953,20 @@ impl SLMPDeviceBlockData<u16> {
     pub fn sets(&mut self, buf: &[u16]) {
         self.value.copy_from_slice(buf);
     }
-    pub fn set(&mut self, dd: SLMPDeviceData<u16>) {
+    pub fn set(&mut self, dd: SLMPDeviceData<u16>) -> Result<(), &'static str> {
         if dd.dev.d_code != self.device_block.top_device.d_code {
-            panic!("Different device")
+            return Err("Different device");
         }
         if dd.dev.addr < self.device_block.top_device.addr {
-            panic!("Address Not in range")
+            return Err("Address Not in range");
         }
         let addr_max = self.device_block.top_device.addr + (self.device_block.count as u32) - 1;
         if dd.dev.addr > addr_max {
-            panic!("Address Not in range")
+            return Err("Address Not in range");
         }
         let d_addr = (dd.dev.addr - self.device_block.top_device.addr) as usize;
         self.value[d_addr] = dd.value;
+        Ok(())
     }
     pub fn gets(&self) -> Vec<SLMPDeviceData<u16>> {
         let mut ret = Vec::new();
@@ -980,23 +982,23 @@ impl SLMPDeviceBlockData<u16> {
         }
         ret
     }
-    pub fn get(&self, dev: SLMPDevice) -> SLMPDeviceData<u16> {
+    pub fn get(&self, dev: SLMPDevice) -> Result<SLMPDeviceData<u16>, &'static str> {
         if dev.d_code != self.device_block.top_device.d_code {
-            panic!("Different device")
+            return Err("Different device");
         }
         if dev.addr < self.device_block.top_device.addr {
-            panic!("Address Not in range")
+            return Err("Address Not in range");
         }
         let addr_max =
             self.device_block.top_device.addr + (self.device_block.count as u32) * 16 - 1;
         if dev.addr > addr_max {
-            panic!("Address Not in range")
+            return Err("Address Not in range");
         }
         let d_addr = (dev.addr - self.device_block.top_device.addr) as usize;
-        SLMPDeviceData::<u16> {
+        Ok(SLMPDeviceData::<u16> {
             dev,
             value: self.value[d_addr],
-        }
+        })
     }
     pub fn pack16(&self) -> Vec<u8> {
         let mut buf = Vec::from(self.device_block.pack16());

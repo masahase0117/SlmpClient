@@ -72,11 +72,12 @@ pub fn send_self_test_cmd(
     connection_info: &mut SLMPConnectionInfo,
     timeout: u16,
     data: &[u8],
-) -> u16 {
+) -> Option<u16> {
     let mut buf = Vec::new();
     let length = data.len();
     if length > 960 {
-        panic!("too long data");
+        eprintln!("too long data");
+        return None;
     }
     buf.push(length as u8);
     buf.push((length >> 8) as u8);
@@ -102,9 +103,14 @@ pub fn decode_self_test_response(buf: &[u8]) -> Vec<u8> {
 /// * `timeout` - SLMPコマンドのタイムアウト, 250msec単位
 /// # 返値
 /// コマンド発行時のシリアル番号
-pub fn send_clear_error_cmd(connection_info: &mut SLMPConnectionInfo, timeout: u16) -> u16 {
+pub fn send_clear_error_cmd(connection_info: &mut SLMPConnectionInfo, timeout: u16) -> Option<u16> {
     connection_info.send_cmd(timeout, SLMPCommand::ClearErrorCode, 0, &[])
 }
+/// 受信したオンデマンドデータの処理
+/// # 引数
+/// * `buf` - 受信したオンデマンドデータの入ったバッファ
+/// # 返値
+/// オンデマンドデータ
 pub fn decode_on_demand_data(buf: &[u8]) -> Option<Vec<u8>> {
     if buf[0] != 1 || buf[1] != 0x21 || buf[2] != 0 || buf[3] != 0 {
         None
