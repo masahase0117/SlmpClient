@@ -250,7 +250,7 @@ mod tests {
 /// # 例
 ///
 /// ```
-/// use libslmp4rust::*;
+/// use slmp_client::*;
 /// let bit_data = [true, true, false, true, false, false];
 /// let packed_data = pack_bits_by_bit(&bit_data);
 /// assert_eq!(packed_data, vec![0x11u8, 0x01u8, 0x00u8]);
@@ -289,7 +289,7 @@ pub fn pack_bits_by_bit(data: &[bool]) -> Vec<u8> {
 /// # 例
 ///
 /// ```
-/// use libslmp4rust::*;
+/// use slmp_client::*;
 /// let bit_data = [true, true, false, true, false, false];
 /// let packed_data = pack_bits_by_word(&bit_data);
 /// assert_eq!(packed_data, vec![0b00001011u8,]);
@@ -322,7 +322,7 @@ pub fn pack_bits_by_word(data: &[bool]) -> Vec<u8> {
 /// # 例
 ///
 /// ```
-/// use libslmp4rust::*;
+/// use slmp_client::*;
 /// let raw_data = [0x1995u16, 0x1202u16, 0x1130u16];
 /// let packed_data = pack_words_by_word(&raw_data);
 /// assert_eq!(packed_data, vec![0x95, 0x19, 0x02, 0x12, 0x30, 0x11]);
@@ -349,7 +349,7 @@ pub fn pack_words_by_word(data: &[u16]) -> Vec<u8> {
 /// # 例
 ///
 /// ```
-/// use libslmp4rust::*;
+/// use slmp_client::*;
 /// let raw_data = [0x00, 0x01, 0x00, 0x11];
 /// let unpacked = unpack_bits_by_bit(&raw_data).unwrap();
 /// assert_eq!(unpacked, vec![false, false, false, true, false, false, true, true]);
@@ -393,7 +393,7 @@ pub fn unpack_bits_by_bit(data: &[u8]) -> Result<Vec<bool>, &'static str> {
 /// # 例
 ///
 /// ```
-/// use libslmp4rust::*;
+/// use slmp_client::*;
 /// let raw_data = [0x34, 0x12];
 /// let unpacked = unpack_bits_by_word(&raw_data);
 /// assert_eq!(unpacked,
@@ -428,7 +428,7 @@ pub fn unpack_bits_by_word(data: &[u8]) -> Vec<bool> {
 /// # 例
 ///
 /// ```
-/// use libslmp4rust::*;
+/// use slmp_client::*;
 /// let raw_data = [0x34, 0x12, 0x02, 0x00, 0xef, 0x1d];
 /// let unpacked = unpack_words_by_word(&raw_data);
 /// assert_eq!(unpacked, vec![0x1234, 0x0002, 0x1def])
@@ -459,7 +459,7 @@ pub fn unpack_words_by_word(data: &[u8]) -> Vec<u16> {
 /// # 例
 ///
 /// ```
-/// use libslmp4rust::*;
+/// use slmp_client::*;
 /// let raw_data = [0x4e, 0x4f, 0x54, 0x4c, 0xaf, 0xb9, 0xde, 0xc3];
 /// let unpacked = unpack_dwords_by_dword(&raw_data);
 /// assert_eq!(unpacked, vec![0x4c544f4e, 0xc3deb9af]);
@@ -502,12 +502,12 @@ pub fn unpack_dwords_by_dword(data: &[u8]) -> Vec<u32> {
 /// # 例
 ///
 /// ```
-/// use libslmp4rust::*;
+/// use slmp_client::*;
 /// let raw_data: u8 = 0x49;
 /// let unpacked = unpack_bits_in_byte(raw_data);
-/// assert_eq!(unpacked, vec![true, false, false, true, false, false, true, false]);
+/// assert_eq!(unpacked, [true, false, false, true, false, false, true, false]);
 /// ```
-fn unpack_bits_in_byte(data: u8) -> [bool; 8] {
+pub fn unpack_bits_in_byte(data: u8) -> [bool; 8] {
     let mut buf = [false; 8];
     for i in 0..8 {
         let tmp = 1u8 << i;
@@ -531,13 +531,13 @@ fn unpack_bits_in_byte(data: u8) -> [bool; 8] {
 /// # 例
 ///
 /// ```
-/// use libslmp4rust::*;
+/// use slmp_client::*;
 /// let raw_data: u16 = 0x2030;
 /// let unpacked = unpack_bits_in_word(raw_data);
-/// assert_eq!(unpacked, vec![false, false, false, false, true, true, false, false,
+/// assert_eq!(unpacked, [false, false, false, false, true, true, false, false,
 ///                           false, false, false, false, false, true, false, false]);
 /// ```
-fn unpack_bits_in_word(data: u16) -> [bool; 16] {
+pub fn unpack_bits_in_word(data: u16) -> [bool; 16] {
     let mut buf = [false; 16];
     let lows = unpack_bits_in_byte(data as u8);
     let highs = unpack_bits_in_byte((data >> 8) as u8);
@@ -563,16 +563,16 @@ fn unpack_bits_in_word(data: u16) -> [bool; 16] {
 /// # 例
 ///
 /// ```
-/// use libslmp4rust::*;
+/// use slmp_client::*;
 /// let raw_data: u32 = 0xc3deb9af;
 /// let packed = unpack_bits_in_dword(raw_data);
-/// assert_eq!(packed, vec![
+/// assert_eq!(packed, [
 /// true, true, true, true, false, true, false, true,
 /// true, false, false, true, true, true, false, true,
 /// false, true, true, true, true, false, true, true,
 /// true, true, false, false, false, false, true, true]);
 /// ```
-fn unpack_bits_in_dword(data: u32) -> [bool; 32] {
+pub fn unpack_bits_in_dword(data: u32) -> [bool; 32] {
     let mut buf = [false; 32];
     let d1 = unpack_bits_in_byte((data >> 24) as u8);
     let d2 = unpack_bits_in_byte((data >> 16) as u8);
