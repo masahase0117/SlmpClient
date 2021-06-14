@@ -127,6 +127,7 @@ mod tests {
     use std::net::{IpAddr, Ipv4Addr, SocketAddr};
 
     #[test]
+    #[ignore]
     pub fn test_udp_self_test() {
         let mut connection_info = SLMPConnectionInfo::new_udp(SocketAddr::new(
             IpAddr::V4(Ipv4Addr::new(192, 168, 1, 10)),
