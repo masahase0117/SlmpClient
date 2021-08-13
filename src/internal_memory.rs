@@ -72,13 +72,13 @@ pub fn send_read_cmd_32(
     let s_cmd;
     if is_bit {
         s_cmd = 3;
-        if buf[4] & 1 == 1 {
+        if buf[6] & 1 == 1 {
             // ビットデータは必ず偶数個
-            if buf[4] == 0xff {
-                buf[5] += 1;
-                buf[4] = 0;
+            if buf[6] == 0xff {
+                buf[7] += 1;
+                buf[6] = 0;
             } else {
-                buf[4] += 1;
+                buf[6] += 1;
             }
         }
     } else {
