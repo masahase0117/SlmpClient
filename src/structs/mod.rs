@@ -252,7 +252,7 @@ impl SLMPConnectionInfo {
                     self.buf.remove(0),
                     self.buf.remove(0),
                 ];
-                let sub_header = SlmpMTHeader::from(buf_header);
+                let sub_header = SlmpMTHeader::from(&buf_header);
                 ser_no = sub_header.serial_no;
                 let buf_target = [
                     self.buf.remove(0),
@@ -265,7 +265,7 @@ impl SLMPConnectionInfo {
                     self.buf.remove(0),
                     self.buf.remove(0),
                 ];
-                let target = SlmpSubHeaderRes::from(buf_target);
+                let target = SlmpSubHeaderRes::from(&buf_target);
                 let dl = target.dl - 2;
                 end_code = SLMPEndCode::get(target.end_code);
                 assert_eq!(target.net_no, self.network);

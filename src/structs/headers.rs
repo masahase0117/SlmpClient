@@ -8,7 +8,11 @@ pub struct SlmpMTHeader {
     pub reserved2: u16,
 }
 impl SlmpMTHeader {
-    pub fn from(buf: [u8; 6]) -> SlmpMTHeader {
+    /// バイト列から構築
+    ///
+    /// # 引数
+    /// * `buf` - バイト列、6バイト以上が必要
+    pub fn from(buf: &[u8]) -> SlmpMTHeader {
         let f_type = (buf[0] as u16) + ((buf[1] as u16) << 8);
         let serial_no = (buf[2] as u16) + ((buf[3] as u16) << 8);
         let reserved2 = (buf[4] as u16) + ((buf[5] as u16) << 8);
@@ -35,7 +39,11 @@ pub struct SlmpSubHeaderRes {
     pub end_code: u16,
 }
 impl SlmpSubHeaderRes {
-    pub fn from(buf: [u8; 9]) -> SlmpSubHeaderRes {
+    /// バイト列から構築
+    ///
+    /// # 引数
+    /// * `buf` - バイト列、9バイト以上必要
+    pub fn from(buf: &[u8]) -> SlmpSubHeaderRes {
         let net_no = buf[0];
         let node_no = buf[1];
         let dst_proc_no = (buf[2] as u16) + ((buf[3] as u16) << 8);
@@ -68,6 +76,10 @@ pub struct SlmpSubHeaderReq {
     pub timer: u16,
 }
 impl SlmpSubHeaderReq {
+    /// バイト列から構築
+    ///
+    /// # 引数
+    /// * `buf` - バイト列、9バイト以上必要
     pub fn from(buf: [u8; 9]) -> SlmpSubHeaderReq {
         let net_no = buf[0];
         let node_no = buf[1];
@@ -84,6 +96,7 @@ impl SlmpSubHeaderReq {
             timer,
         }
     }
+    /// バイト列へ変換
     pub fn to(&self) -> [u8; 9] {
         let mut buf = [0; 9];
         buf[0] = self.net_no;
@@ -115,7 +128,11 @@ pub struct SlmpSubHeaderOd {
     pub reserved3: u16,
 }
 impl SlmpSubHeaderOd {
-    pub fn from(buf: [u8; 9]) -> SlmpSubHeaderOd {
+    /// バイト列から構築
+    ///
+    /// # 引数
+    /// * `buf` - バイト列。9バイト以上必要
+    pub fn from(buf: &[u8]) -> SlmpSubHeaderOd {
         let net_no = buf[0];
         let node_no = buf[1];
         let dst_proc_no = (buf[2] as u16) + ((buf[3] as u16) << 8);
