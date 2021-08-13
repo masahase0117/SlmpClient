@@ -1,6 +1,6 @@
 [package]
 name = "slmp_client"
-version = "0.1.1"
+version = "0.2.0"
 authors = ["Masahiro HASEGAWA <masahase@gmail.com>"]
 edition = "2018"
 description = "Mitsubishi Seamless Message Protocol Client"

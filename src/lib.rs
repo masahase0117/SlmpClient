@@ -1,9 +1,11 @@
+mod dual_port_memory;
 mod enums;
 mod internal_memory;
 mod packing;
 mod remote_control;
 mod structs;
 
+pub use dual_port_memory::*;
 pub use enums::*;
 pub use internal_memory::*;
 pub use packing::*;
