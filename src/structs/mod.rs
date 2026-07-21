@@ -331,6 +331,7 @@ impl SLMPConnectionInfo {
         self.set_timeout((timeout as u64) * 250);
         // 3回までリトライ
         for i in 0..3 {
+            // 中途半端な応答が帰ってきても困るので `seq_id` は毎回変える
             seq_no -= 1;
             let header = make_frame_header(&slmp_header, seq_no, cmd, sub_command);
             let mut write_buf: Vec<u8> = Vec::from(header);
