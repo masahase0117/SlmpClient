@@ -595,7 +595,7 @@ pub fn unpack_bits_in_dword(data: u32) -> [bool; 32] {
 }
 
 /// SLMPにおけるデバイス
-#[derive(Copy, Clone, Debug, Hash)]
+#[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
 pub struct SLMPDevice {
     /// デバイス種別
     pub d_code: SLMPDeviceCode,
@@ -622,32 +622,14 @@ impl SLMPDevice {
         buf
     }
 }
-impl PartialEq for SLMPDevice {
-    fn eq(&self, other: &Self) -> bool {
-        if self.d_code == other.d_code && self.addr == other.addr {
-            true
-        } else {
-            false
-        }
-    }
-}
 
 /// SLMPにおけるデバイスの値
-#[derive(Copy, Clone, Debug, Hash)]
+#[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
 pub struct SLMPDeviceData<T: PartialEq + Copy + Clone> {
     /// 対象デバイス
     pub dev: SLMPDevice,
     /// デバイスの持っている値
     pub value: T,
-}
-impl<T: PartialEq + Copy> PartialEq for SLMPDeviceData<T> {
-    fn eq(&self, other: &Self) -> bool {
-        if self.dev == other.dev && self.value == other.value {
-            true
-        } else {
-            false
-        }
-    }
 }
 
 impl SLMPDeviceData<bool> {
@@ -842,7 +824,7 @@ fn unpack_dword2word(src: &SLMPDeviceData<u32>) -> [SLMPDeviceData<u16>; 2] {
 /// 先頭デバイスと点数で表される
 ///
 /// ここで点数はビットデバイスであろうとワード単位となる
-#[derive(Copy, Clone, Debug, Hash)]
+#[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
 pub struct SLMPDeviceBlock {
     /// 先頭デバイス
     pub top_device: SLMPDevice,
@@ -870,15 +852,6 @@ impl SLMPDeviceBlock {
         buf[6] = self.count as u8;
         buf[7] = (self.count >> 8) as u8;
         buf
-    }
-}
-impl PartialEq for SLMPDeviceBlock {
-    fn eq(&self, other: &Self) -> bool {
-        if self.top_device == other.top_device && self.count == other.count {
-            true
-        } else {
-            false
-        }
     }
 }
 impl PartialOrd for SLMPDevice {
