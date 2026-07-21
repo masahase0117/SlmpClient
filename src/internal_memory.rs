@@ -95,9 +95,8 @@ pub fn decode_read_bit_response(
     target: SLMPDevice,
 ) -> Result<Vec<SLMPDeviceData<bool>>, &'static str> {
     let mut ret = Vec::new();
-    let mut idx = target.addr;
     let bs = unpack_bits_by_bit(buf)?;
-    for b in bs {
+    for (idx, b) in (target.addr..).zip(bs.into_iter()) {
         ret.push(SLMPDeviceData::<bool> {
             dev: SLMPDevice {
                 d_code: target.d_code,
@@ -105,7 +104,6 @@ pub fn decode_read_bit_response(
             },
             value: b,
         });
-        idx += 1;
     }
     Ok(ret)
 }
@@ -119,9 +117,8 @@ pub fn decode_read_bit_response(
 /// 失敗した場合、エラー内容を含んだ文字列。
 pub fn decode_read_word_response(buf: &[u8], target: SLMPDevice) -> Vec<SLMPDeviceData<u16>> {
     let mut ret = Vec::new();
-    let mut idx = target.addr;
     let ws = unpack_words_by_word(buf);
-    for w in ws {
+    for (idx, w) in (target.addr..).zip(ws.into_iter()) {
         ret.push(SLMPDeviceData::<u16> {
             dev: SLMPDevice {
                 d_code: target.d_code,
@@ -129,7 +126,6 @@ pub fn decode_read_word_response(buf: &[u8], target: SLMPDevice) -> Vec<SLMPDevi
             },
             value: w,
         });
-        idx += 1;
     }
     ret
 }
