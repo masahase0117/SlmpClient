@@ -23,9 +23,7 @@ pub fn send_read_cmd_16(
 ) -> Option<u16> {
     let buf1 = target.pack16();
     let mut buf = [0u8; 6];
-    for i in 0..4 {
-        buf[i] = buf1[i];
-    }
+    buf[..4].copy_from_slice(&buf1);
     buf[4] = count as u8;
     buf[5] = (count >> 8) as u8;
     let s_cmd;
@@ -64,9 +62,7 @@ pub fn send_read_cmd_32(
 ) -> Option<u16> {
     let buf1 = target.pack32();
     let mut buf = [0u8; 8];
-    for i in 0..6 {
-        buf[i] = buf1[i];
-    }
+    buf[..6].copy_from_slice(&buf1);
     buf[6] = count as u8;
     buf[7] = (count >> 8) as u8;
     let s_cmd;

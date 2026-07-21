@@ -636,9 +636,7 @@ impl SLMPDeviceData<bool> {
     pub fn pack32(&self) -> [u8; 8] {
         let mut buf = [0u8; 8];
         let dev = self.dev.pack32();
-        for i in 0..6 {
-            buf[i] = dev[i];
-        }
+        buf[..6].copy_from_slice(&dev);
         if self.value {
             buf[7] = 1;
         }
@@ -647,9 +645,7 @@ impl SLMPDeviceData<bool> {
     pub fn pack16(&self) -> [u8; 5] {
         let mut buf = [0u8; 5];
         let dev = self.dev.pack16();
-        for i in 0..4 {
-            buf[i] = dev[i];
-        }
+        buf[..4].copy_from_slice(&dev);
         if self.value {
             buf[4] = 1;
         }
@@ -661,9 +657,7 @@ impl SLMPDeviceData<u16> {
     pub fn pack32(&self) -> [u8; 8] {
         let mut buf = [0u8; 8];
         let dev = self.dev.pack32();
-        for i in 0..6 {
-            buf[i] = dev[i];
-        }
+        buf[..6].copy_from_slice(&dev);
         buf[6] = self.value as u8;
         buf[7] = (self.value >> 8) as u8;
         buf
@@ -671,9 +665,7 @@ impl SLMPDeviceData<u16> {
     pub fn pack16(&self) -> [u8; 6] {
         let mut buf = [0u8; 6];
         let dev = self.dev.pack16();
-        for i in 0..4 {
-            buf[i] = dev[i];
-        }
+        buf[..4].copy_from_slice(&dev);
         buf[4] = self.value as u8;
         buf[5] = (self.value >> 8) as u8;
         buf
@@ -687,9 +679,7 @@ impl SLMPDeviceData<u32> {
     pub fn pack32(&self) -> [u8; 10] {
         let mut buf = [0u8; 10];
         let dev = self.dev.pack32();
-        for i in 0..6 {
-            buf[i] = dev[i];
-        }
+        buf[..6].copy_from_slice(&dev);
         buf[6] = self.value as u8;
         buf[7] = (self.value >> 8) as u8;
         buf[8] = (self.value >> 16) as u8;
@@ -699,9 +689,7 @@ impl SLMPDeviceData<u32> {
     pub fn pack16(&self) -> [u8; 8] {
         let mut buf = [0u8; 8];
         let dev = self.dev.pack16();
-        for i in 0..4 {
-            buf[i] = dev[i];
-        }
+        buf[..4].copy_from_slice(&dev);
         buf[4] = self.value as u8;
         buf[5] = (self.value >> 8) as u8;
         buf[6] = (self.value >> 16) as u8;
@@ -835,9 +823,7 @@ impl SLMPDeviceBlock {
     pub fn pack16(&self) -> [u8; 6] {
         let packed = self.top_device.pack16();
         let mut buf = [0; 6];
-        for i in 0..4 {
-            buf[i] = packed[i];
-        }
+        buf[..4].copy_from_slice(&packed);
         buf[4] = self.count as u8;
         buf[5] = (self.count >> 8) as u8;
 
@@ -846,9 +832,7 @@ impl SLMPDeviceBlock {
     pub fn pack32(&self) -> [u8; 8] {
         let packed = self.top_device.pack32();
         let mut buf = [0u8; 8];
-        for i in 0..6 {
-            buf[i] = packed[i];
-        }
+        buf[..6].copy_from_slice(&packed);
         buf[6] = self.count as u8;
         buf[7] = (self.count >> 8) as u8;
         buf

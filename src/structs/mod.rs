@@ -382,9 +382,7 @@ fn make_frame_header(
     // マルチドロップ
     // データ長2byte
     // タイマ2byte
-    for i in 0..9 {
-        buf[6 + i] = pre[i];
-    }
+    buf[6..(9 + 6)].copy_from_slice(&pre);
     // コマンド2byte
     let command = command as u16;
     buf[15] = command as u8;
