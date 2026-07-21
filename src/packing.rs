@@ -301,7 +301,7 @@ pub fn pack_bits_by_word(data: &[bool]) -> Vec<u8> {
             buf.push(0u8);
         }
         let mut tmp = buf.pop().unwrap();
-        if let true = d {
+        if *d {
             tmp += 1u8 << (i % 8);
         }
         buf.push(tmp);
