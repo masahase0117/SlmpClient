@@ -894,14 +894,14 @@ mod tests {
         };
         let ret = decode_read_bit_response(&buf, dev).unwrap();
         assert_eq!(ret.len(), 8);
-        assert_eq!(ret[0].value, false);
-        assert_eq!(ret[1].value, false);
-        assert_eq!(ret[2].value, false);
-        assert_eq!(ret[3].value, true);
-        assert_eq!(ret[4].value, false);
-        assert_eq!(ret[5].value, false);
-        assert_eq!(ret[6].value, true);
-        assert_eq!(ret[7].value, true);
+        assert!(!ret[0].value);
+        assert!(!ret[1].value);
+        assert!(!ret[2].value);
+        assert!(ret[3].value);
+        assert!(!ret[4].value);
+        assert!(!ret[5].value);
+        assert!(ret[6].value);
+        assert!(ret[7].value);
     }
     #[test]
     pub fn test_decode_read_word_response() {
