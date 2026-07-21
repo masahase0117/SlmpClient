@@ -1,5 +1,5 @@
 /// SLMPで定義されているコマンド
-#[derive(Copy, Clone, Debug, Hash)]
+#[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
 pub enum SLMPCommand {
     // Device
     DeviceRead = 0x0401,
@@ -136,7 +136,7 @@ pub enum SLMPCommand {
 }
 
 /// SLMPで定義されているデバイス
-#[derive(Copy, Clone, Debug, Hash)]
+#[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
 pub enum SLMPDeviceCode {
     SM = 0x91,
     SD = 0xA9,
@@ -179,7 +179,7 @@ pub enum SLMPDeviceCode {
 }
 
 /// SLMPで定義されている終了コード
-#[derive(Copy, Clone, Debug, Hash)]
+#[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
 pub enum SLMPEndCode {
     Success = 0x00,
     WrongCommand = 0xC059,
@@ -268,22 +268,6 @@ impl FromPrimitive for SLMPEndCode {
     }
     fn from_u64(n: u64) -> Option<SLMPEndCode> {
         SLMPEndCode::get(n as u16)
-    }
-}
-
-impl PartialEq for SLMPCommand {
-    fn eq(&self, other: &Self) -> bool {
-        (*self as u32) == (*other as u32)
-    }
-}
-impl PartialEq for SLMPDeviceCode {
-    fn eq(&self, other: &Self) -> bool {
-        (*self as u32) == (*other as u32)
-    }
-}
-impl PartialEq for SLMPEndCode {
-    fn eq(&self, other: &Self) -> bool {
-        (*self as u32) == (*other as u32)
     }
 }
 
