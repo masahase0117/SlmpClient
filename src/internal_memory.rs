@@ -96,7 +96,7 @@ pub fn decode_read_bit_response(
 ) -> Result<Vec<SLMPDeviceData<bool>>, &'static str> {
     let mut ret = Vec::new();
     let bs = unpack_bits_by_bit(buf)?;
-    for (idx, b) in (target.addr..).zip(bs.into_iter()) {
+    for (idx, b) in (target.addr..).zip(bs) {
         ret.push(SLMPDeviceData::<bool> {
             dev: SLMPDevice {
                 d_code: target.d_code,
@@ -118,7 +118,7 @@ pub fn decode_read_bit_response(
 pub fn decode_read_word_response(buf: &[u8], target: SLMPDevice) -> Vec<SLMPDeviceData<u16>> {
     let mut ret = Vec::new();
     let ws = unpack_words_by_word(buf);
-    for (idx, w) in (target.addr..).zip(ws.into_iter()) {
+    for (idx, w) in (target.addr..).zip(ws) {
         ret.push(SLMPDeviceData::<u16> {
             dev: SLMPDevice {
                 d_code: target.d_code,
