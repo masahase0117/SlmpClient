@@ -38,7 +38,7 @@ pub fn decode_read_memory(buf: &[u8]) -> Result<Vec<u16>, &'static str> {
     let mut ret = Vec::new();
     let buf_length = buf.len();
     let mut i = 0;
-    if buf_length < 2 && (buf_length % 2 != 0) {
+    if buf_length < 2 && !buf_length.is_multiple_of(2) {
         return Err("Few length buf");
     }
     while i < buf_length {
@@ -110,7 +110,7 @@ pub fn send_read_extend_unit_memory(
     buf[1] = (start_addr >> 8) as u8;
     buf[2] = (start_addr >> 16) as u8;
     buf[3] = (start_addr >> 24) as u8;
-    if byte_length < 2 || byte_length > 1920 {
+    if !(2..=1920).contains(&byte_length) {
         return None;
     }
     buf[4] = byte_length as u8;
