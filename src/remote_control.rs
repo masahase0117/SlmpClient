@@ -96,9 +96,9 @@ pub fn send_read_type_name_cmd(
 /// 形名と形名コード
 pub fn decode_read_type_name_response(buf: &[u8]) -> (String, u16) {
     let mut s = String::new();
-    for i in 0..16 {
-        s.push(buf[i] as char);
+    for i in buf.iter().take(16) {
+        s.push(*i as char);
     }
-    let code = buf[16] as u16 + (buf[17] as u16) << 8;
+    let code = buf[16] as u16 + ((buf[17] as u16) << 8);
     (s, code)
 }
