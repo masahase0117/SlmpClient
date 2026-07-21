@@ -200,7 +200,7 @@ impl SLMPConnectionInfo {
                 assert_eq!(self.buf[0], self.get_node());
                 self.buf.remove(0); // nodeNo
                 assert_eq!(
-                    self.buf[0] as u16 + (self.buf[1] as u16) << 8,
+                    self.buf[0] as u16 + ((self.buf[1] as u16) << 8),
                     self.get_dst_proc()
                 );
                 self.buf.remove(0);
