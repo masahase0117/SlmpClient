@@ -335,7 +335,7 @@ impl SLMPConnectionInfo {
             seq_no -= 1;
             let header = make_frame_header(&slmp_header, seq_no, cmd, sub_command);
             let mut write_buf: Vec<u8> = Vec::from(header);
-            write_buf.extend_from_slice(&content_data);
+            write_buf.extend_from_slice(content_data);
             let send_result = self.write(&write_buf);
             match send_result {
                 Ok(send_size) => {
