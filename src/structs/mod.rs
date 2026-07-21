@@ -62,11 +62,10 @@ pub struct SLMPConnectionInfo {
 
 use std::default::Default;
 extern crate rand;
-use rand::Rng;
 
 impl Default for SLMPConnectionInfo {
     fn default() -> Self {
-        let rnd: u8 = rand::thread_rng().gen();
+        let rnd: u8 = rand::random();
         SLMPConnectionInfo {
             network: 1,
             node: 1,
@@ -148,7 +147,7 @@ impl SLMPConnectionInfo {
     fn get_new_serial(&mut self) -> u16 {
         self.seq_no += 0x10;
         if self.seq_no > 0xff00 {
-            let rnd: u8 = rand::thread_rng().gen();
+            let rnd: u8 = rand::random();
             self.seq_no = rnd as u16;
         }
         self.seq_no
