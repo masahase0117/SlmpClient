@@ -142,8 +142,8 @@ mod tests {
         assert_eq!(end_code, Some(SLMPEndCode::Success));
         let ret = decode_self_test_response(&buf_r);
         assert_eq!(ret.len(), 3);
-        assert_eq!(ret[0] as u8, buf[0] as u8);
-        assert_eq!(ret[1] as u8, buf[1] as u8);
-        assert_eq!(ret[2] as u8, buf[2] as u8);
+        assert_eq!(ret[0], buf[0]);
+        assert_eq!(ret[1], buf[1]);
+        assert_eq!(ret[2], buf[2]);
     }
 }
