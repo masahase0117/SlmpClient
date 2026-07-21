@@ -179,7 +179,7 @@ impl SLMPConnectionInfo {
             let recv_result = self.read(&mut buf);
             match recv_result {
                 Ok(recv_size) => self.buf.extend_from_slice(&buf[..recv_size]),
-                Err(e) => eprintln!("{}", e.to_string()),
+                Err(e) => eprintln!("{}", e),
             }
             count += 1;
         }
@@ -222,7 +222,7 @@ impl SLMPConnectionInfo {
                     let recv_result = self.read(&mut buf);
                     match recv_result {
                         Ok(recv_size) => self.buf.extend_from_slice(&buf[..recv_size]),
-                        Err(e) => eprintln!("{}", e.to_string()),
+                        Err(e) => eprintln!("{}", e),
                     }
                     count += 1;
                 }
@@ -280,7 +280,7 @@ impl SLMPConnectionInfo {
                     let recv_result = self.read(&mut buf);
                     match recv_result {
                         Ok(recv_size) => self.buf.extend_from_slice(&buf[..recv_size]),
-                        Err(e) => eprintln!("{}", e.to_string()),
+                        Err(e) => eprintln!("{}", e),
                     }
                     count += 1;
                 }
@@ -349,7 +349,7 @@ impl SLMPConnectionInfo {
                     }
                 }
                 Err(e) => {
-                    eprintln!("{}", e.to_string());
+                    eprintln!("{}", e);
                     if i == 2 {
                         return None;
                     }
